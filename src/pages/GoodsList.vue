@@ -4,7 +4,7 @@
     <!-- 头部 -->
     <el-row type="flex" justify="space-between" class="goodslist-header">
       <div>
-        <el-button plain>新增</el-button>
+        <el-button plain @click="handleToGoodsAdd">新增</el-button>
         <el-button type="danger" plain @click="handleDeleteMore">删除</el-button>
       </div>
       <div class="select">
@@ -52,7 +52,7 @@
         :page-sizes="[5, 10, 15, 20]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
+        :total="goodsListTotal"
       ></el-pagination>
     </div>
 
@@ -67,8 +67,8 @@ export default {
       pageIndex: 1,
       pageSize: 10,
       searchvalue: "",
-      ids: "",
-      total:0
+      delGoodsIds: "",
+      goodsListTotal:0
     };
   },
   methods: {
@@ -81,13 +81,14 @@ export default {
         method: "GET"
       }).then(res => {
         // console.log(res.data.totalcount);
-        this.total = res.data.totalcount;
+        this.goodsListTotal = res.data.totalcount;
         this.tableData = res.data.message;
       });
     },
+    //删除商品的函数
     delGoodsList() {
       this.$axios({
-        url: `http://127.0.0.1:8899/admin/goods/del/${this.ids}`,
+        url: `http://127.0.0.1:8899/admin/goods/del/${this.delGoodsIds}`,
         method: "GET"
       }).then(res => {
         // console.log(res);
@@ -96,21 +97,22 @@ export default {
       });
     },
     handleEdit(id) {
-      console.log(id);
+      // console.log(id);
+      this.$router.push(`/admin/goods-edit/${id}`)
     },
     handleDelete(id) {
       //   console.log(id);
-      this.ids = id;
+      this.delGoodsIds = id;
       this.delGoodsList();
     },
     handleSelectionChange(val) {
       //   console.log(val);
       var arr = val.map(v => v.id);
       //   console.log(arr);
-      this.ids = arr.join(",");
+      this.delGoodsIds = arr.join(",");
     },
     handleDeleteMore() {
-      if(this.ids==''){
+      if(this.delGoodsIds==''){
           this.$message.error('未选择需要删除的内容！');
           return
       }
@@ -128,6 +130,9 @@ export default {
     //   console.log(`当前页: ${val}`);
         this.pageIndex = val;
         this.getGoodsList();
+    },
+    handleToGoodsAdd(){
+      this.$router.push('/admin/goods-add')
     }
   },
   mounted() {
