@@ -70,6 +70,34 @@ const routes = [
 //路由实例
 const router = new VueRouter({ routes });
 
+//路由拦截
+router.beforeEach((to,from,next) => {
+  // console.log(to);
+  // console.log(from);
+
+  axios({
+    url: 'http://127.0.0.1:8899/admin/account/islogin',
+    method: 'GET',
+    withCredentials: true
+  }).then(res => {
+    const {code} = res.data;
+
+    if(to.path == '/login'){
+      if(code == 'nologin'){
+        next()
+      }else {
+        next('/admin/goods-list')
+      }
+    }else {
+      if(code == 'nologin'){
+        next('/login')
+      }else {
+        next()
+      }
+    }
+  })
+})
+
 Vue.config.productionTip = false;
 
 //给Vue的原型绑定axios

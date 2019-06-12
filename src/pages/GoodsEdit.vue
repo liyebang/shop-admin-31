@@ -134,12 +134,18 @@ export default {
           url: `http://127.0.01:8899/admin/goods/getgoodsmodel/${this.$route.params.id}`,
           method: 'GET'
       }).then(res => {
-          console.log(res);
+        //   console.log(res);
         const {status, message} = res.data;
         this.imageUrl = message.imgList[0].url;
         this.form = {
                 ...message,
-                category_id: +message.category_id
+                category_id: +message.category_id,
+                fileList: message.fileList.map(v => {
+                    return {
+                        ...v,
+                        url: `http://localhost:8899${v.shorturl}`
+                    }
+                })
             }
       })
     // console.log(this.$route);
@@ -176,8 +182,10 @@ export default {
   },
   methods: {
     onSubmit() {
+        // console.log(this.$route.params.id);
+        // console.log(this.form.imgList);
         this.$axios({
-            url: 'http://127.0.0.1:8899/admin/goods/add/goods',
+            url: `http://127.0.0.1:8899/admin/goods/edit/${this.$route.params.id}`,
             method: 'POST',
             withCredentials: true,
             data: this.form
@@ -202,7 +210,11 @@ export default {
         // console.log(res);
         // console.log(file);
         this.imageUrl = URL.createObjectURL(file.raw);
-        this.form.imgList = [res];
+        const obj = {
+            ...res,
+            shorturl: '/' + res.shorturl
+        }
+        this.form.imgList = [obj];
     },
     beforeAvatarUpload(file) {
         const isLt2M = file.size / 1024 / 1024 < 2;
@@ -213,9 +225,17 @@ export default {
         return  isLt2M;
     },
     handleRemove(file, fileList) {
-        // console.log(file, fileList);
-        const arr = fileList.map(v => v.response);
-        this.form.fileList = arr;
+        // console.log(file);
+        // console.log(fileList);
+        // const arr = fileList.map(v => v.response);
+        // this.form.fileList = arr;
+        const arr = [...fileList];
+        //       console.log(arr);
+        // arr.forEach(v => {
+        //     console.log(v);
+        // })
+        // // console.log(arr);
+        this.form.fileList = arr
     },
     handlePictureCardPreview(file) {
         this.dialogImageUrl = file.url;
