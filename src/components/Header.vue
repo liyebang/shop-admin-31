@@ -6,7 +6,10 @@
                 <i class="el-icon-back" v-if="isShow" @click='handleHidden'></i>
                 <i class="el-icon-right" v-if='!isShow' @click='handleHidden'></i>
             </div>
-            <div>admin 超级管理员 退出</div>
+            <div>
+                <span>{{user.uname}} {{user.realname}} </span>
+                <span class="logout" @click='handleLogout'>退出</span>
+            </div>
         </el-row>
     </div>
 </template>
@@ -15,20 +18,41 @@
 export default {
     data:function () {
         return {
-            isShow: true
+            isShow: true,
+            user:{}
         }
     },
     methods:{
         handleHidden:function () {
             this.isShow = !this.isShow;
             this.$emit('handleHidden')
+        },
+        handleLogout:function () {
+            this.$axios({
+                url: 'http://127.0.0.1:8899/admin/account/logout',
+                method: 'GET',
+                withCredentials: true
+            }).then(res => {
+                console.log(res);
+                const {status,message} = res.data;
+                if(status == 0){
+                    this.$message.success(message);
+                    localStorage.removeItem('user');
+                    this.$router.push('/login');
+                }else {
+                    this.$message.error(message);
+                }
+            })
         }
+    },
+    mounted(){
+        this.user = this.$store.state.user;
     }
 }
 </script>
 
 <style scoped>
-    .arrow{
+    .arrow, .logout{
         cursor: pointer;
     }
 </style>

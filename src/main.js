@@ -10,6 +10,10 @@ import VueRouter from 'vue-router';
 import 'element-ui/lib/theme-chalk/index.css';
 
 
+//引入store
+import store from './store'
+
+
 //导入页面组件
 import Login from './pages/Login.vue';
 import Admin from './pages/Admin.vue';
@@ -106,5 +110,7 @@ Vue.prototype.$axios = axios;
 new Vue({
   render: h => h(App),
   //挂载路由
-  router
+  router,
+  //挂载仓库
+  store
 }).$mount('#app')

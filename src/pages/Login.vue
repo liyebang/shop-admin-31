@@ -56,6 +56,14 @@ export default {
             if (status == 1) {
               this.$message.error(message);
             } else {
+
+              //登录成功，保存登录信息
+              // $store下的方法commit设置仓库的数据
+              // commit方法调用仓库中mutations的方法，第一个参数是方法名
+              // 第二个参数就是传递的数据对象
+              this.$store.commit('setUser',message)
+
+
               this.$message({
                 message: "登录成功",
                 type: "success"
